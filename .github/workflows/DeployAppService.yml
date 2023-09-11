@@ -27,6 +27,8 @@ env:
 on:
   push:
     branches: [ "master" ]
+    paths-ignore:
+      - '.github/workflows/**'
   workflow_dispatch:
 
 permissions:
