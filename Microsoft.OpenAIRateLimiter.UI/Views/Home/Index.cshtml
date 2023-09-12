@@ -58,8 +58,12 @@
 
             $('#errorAlert').hide();
 
+            $('#lblAmount').text('Modify Amount');            
+
+            $('#txtSub').attr('disabled', 'disabled');
             $('#txtSub').val(data.subscriptionKey);
 
+            $('#txtproduct').attr('disabled', 'disabled');
             $('#txtproduct').val(data.productName);
 
             $('#txtAmount').val(data.amount);
@@ -128,9 +132,11 @@
 
             $('#myModal').modal('hide');
 
+            $('#txtSub').removeAttr('disabled');
             $('#txtSub').val('');
 
             $('#txtproduct').val('');
+            $('#txtproduct').removeAttr('disabled');
 
             $('#txtAmount').val('');
 
@@ -156,6 +162,8 @@
             $('#myModal').modal('show');
 
             $('#myModalLabel').text('Add New Quota');
+            
+            $('#lblAmount').text('Monthly Amount');
 
             $('#txtSub').val('');
 
@@ -168,7 +176,11 @@
 
     $(document).bind('keydown', function (e) {
         if (e.which === 13) {
-            $('#btnAdd').trigger('click');
+
+            $('#btnCloseHistoryModal').trigger('click');
+
+            $('#btnClose').trigger('click');
+            
         }
     });
 
@@ -202,11 +214,11 @@
                         <th data-field="rownum" data-formatter="RowNumberGenerator"></th>
                         <th data-field="productName" data-sortable="true" data-formatter="TextGenerator">Product</th>
                         <th data-field="subscriptionKey" data-sortable="true" data-formatter="TextGenerator">APIM Key</th>
-                        <th data-field="balance" data-formatter="TextGenerator">Balance</th>
-                        <th data-field="amount" data-formatter="TextGenerator">Monthly Spend</th>
+                        <th data-field="balance" data-sortable="true" data-formatter="TextGenerator">Balance</th>
+                        <th data-field="amount" data-sortable="true" data-formatter="TextGenerator">Monthly Spend</th>
                         <th data-field="tokenAmount" data-sortable="true" data-formatter="TextGenerator">Total Tokens</th>
                         <th data-field="subscriptionKey" data-formatter="ViewButtonGenerator">History</th>
-                        <th data-field="timestamp" data-formatter="DateFormatter" data-sortable="true">Created Time</th>
+                        <th data-field="timestamp" data-sortable="true" data-formatter="DateFormatter">Created Time</th>
                         <th data-field="subscriptionKey" data-formatter="ButtonGenerator"></th>
                     </tr>
                 </thead>
@@ -224,39 +236,33 @@
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col-1">
-                        </div>
-                        <div class="col-5">
+                        <div class="col-4">
                             <label class="col-form-label" title="Subscription" for="txtSub">Subscription</label>
                         </div>
-                        <div class="col-6">
+                        <div class="col-8">
                             <input type="text" title="Subscription" name="Sub" id="txtSub" class="form-control" />
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-1">
-                        </div>
-                        <div class="col-5">
+                        <div class="col-4">
                             <label class="col-form-label" title="Product" for="txtproduct">Product Name</label>
                         </div>
-                        <div class="col-6">
+                        <div class="col-8">
                             <input type="text" title="product" name="Product" id="txtproduct" class="form-control" />
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-1">
+                        <div class="col-4">
+                            <label class="col-form-label" id="lblAmount" title="Amount" for="txtAmount">Monthly Amount</label>
                         </div>
-                        <div class="col-5">
-                            <label class="col-form-label" title="Amount" for="txtAmount">Monthly Amount</label>
-                        </div>
-                        <div class="col-6">
+                        <div class="col-8">
                             <input type="text" title="Amount" name="Amount" id="txtAmount" class="form-control" />
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button id="btnClose" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button id="btnSave" type="button" class="btn btn-primary">Save changes</button>
+                    <button id="btnSave" type="button" class="btn btn-primary">Save</button>
                 </div>
             </div>
         </div>
@@ -276,15 +282,15 @@
                             <table id="tblHistory" class="table table-striped rounded rounded-lg text-nowrap " data-toggle="table" data-loading-text="Loading Please wait..." width="100%">
                                 <thead class="table-primary">
                                     <tr>
-                                        <th data-field="rownum" data-formatter="TextGenerator"></th>
+                                        <th data-field="rownum" data-formatter="RowNumberGenerator"></th>
                                         <th data-field="operation" data-sortable="true" data-formatter="TextGenerator">operation</th>
                                         <th data-field="model" data-sortable="true" data-formatter="TextGenerator">Model</th>
-                                        <th data-field="promptTokens" data-sortable="true" data-formatter="TextGenerator">promptTokens</th>
-                                        <th data-field="tokenAmount" data-sortable="true" data-formatter="TextGenerator">Total Tokens</th>
-                                        <th data-field="transCost" data-formatter="TextGenerator">Cost</th>
-                                        <th data-field="amount" data-formatter="TextGenerator">Monthly Spend</th>
-                                        <th data-field="balance" data-formatter="TextGenerator">Balance</th>
-                                        <th data-field="timestamp" data-formatter="DateFormatter" data-sortable="true">Created Time</th>
+                                        <th data-field="promptTokens" data-sortable="true" data-formatter="ValueGenerator">Prompt Tokens</th>
+                                        <th data-field="tokenAmount" data-sortable="true" data-formatter="ValueGenerator">Total Tokens</th>
+                                        <th data-field="transCost" data-sortable="true" data-formatter="TextGenerator">Cost</th>
+                                        <th data-field="amount" data-sortable="true" data-formatter="AmountGenerator">Spend</th>
+                                        <th data-field="balance" data-sortable="true" data-formatter="TextGenerator">Balance</th>
+                                        <th data-field="timestamp" data-sortable="true" data-formatter="DateFormatter" >Created Time</th>
                                     </tr>
                                 </thead>
                             </table>
@@ -292,7 +298,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button id="btnCloseHistoryModal" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="btnCloseHistoryModal" type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>

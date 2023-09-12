@@ -49,7 +49,9 @@ namespace Microsoft.OpenAIRateLimiter.UI.Controllers
 
                 var body = await resp.Content.ReadAsStringAsync();
 
-                return new JsonResult(JsonConvert.DeserializeObject<List<ProdQuota>>(body) ?? new List<ProdQuota>());
+                var history = JsonConvert.DeserializeObject<List<ProdQuota>>(body) ?? new List<ProdQuota>();
+
+                return new JsonResult(history.OrderByDescending(o => o.Timestamp));
 
             }
             catch (Exception ex)

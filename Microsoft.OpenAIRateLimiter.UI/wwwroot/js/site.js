@@ -12,6 +12,18 @@ function ViewButtonGenerator(value, row, index) {
     return value == "" ? "" : '<input type="button" id="btnView' + index + '" class="btn btn-link btnView" name="' + value + '" value="View" />';
 }
 
+function AmountGenerator(value, row, index) {
+
+    if (row["operation"].toLowerCase() == "deposit" || row["operation"].toLowerCase() == "create")
+        return value;
+    else
+        return value == 0 ? "" : value;
+}
+
+function ValueGenerator(value, row, index) {
+   return value !== 0 ? value : "";
+}
+
 function TextGenerator(value, row, index) {
 
     return value !== null ? value : "";
