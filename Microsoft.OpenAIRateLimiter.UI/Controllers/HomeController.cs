@@ -34,6 +34,32 @@ namespace Microsoft.OpenAIRateLimiter.UI.Controllers
             return JsonConvert.DeserializeObject<List<ProdQuota>>(body) ?? new List<ProdQuota>() ;
 
         }
+        
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public async Task<JsonResult> GetHistory(string subscription)
+        {
+
+            _logger.LogInformation($"Entered  Search ");
+
+            try
+            {
+
+                using var resp = await _client.GetAsync($"/CustomQuota/Quota/{subscription}/history");
+
+                var body = await resp.Content.ReadAsStringAsync();
+
+                return new JsonResult(JsonConvert.DeserializeObject<List<ProdQuota>>(body) ?? new List<ProdQuota>());
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+
+                throw;
+            }
+
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public async Task<JsonResult> Search()
@@ -86,9 +112,9 @@ namespace Microsoft.OpenAIRateLimiter.UI.Controllers
             if (string.IsNullOrEmpty(subscription))
                 return new ProdQuota();
             
-            var quotas = await GetProdQuota();
+            var quota = (await GetProdQuota()).FirstOrDefault(x => x.SubscriptionKey == subscription);
 
-            return quotas.FirstOrDefault(x => x.SubscriptionKey == subscription);
+            return quota ?? new ProdQuota();
         }
 
         public IActionResult Privacy()

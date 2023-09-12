@@ -7,20 +7,34 @@ namespace Microsoft.OpenAIRateLimiter.UI.Models
         [JsonPropertyName("subscriptionKey")]
         public string SubscriptionKey { get; set; } = default!;
 
+        public string RowKey { get; set; } = default!;
+
         [JsonPropertyName("productName")]
         public string ProductName { get; set; } = default!;
 
-        [JsonPropertyName("amount")]
-        public string Amount { get; set; } = default!;
+        [JsonPropertyName("timestamp")]
+        public DateTimeOffset? Timestamp { get; set; } = default!;
+
+        [JsonPropertyName("model")]
+        public string Model { get; set; } = "";
 
         [JsonPropertyName("tokenAmount")]
-        public int TokenAmount { get; set; } = default!;
+        public int TotalTokens { get; set; }
 
-        [JsonPropertyName("monthlyAmount")]
-        public int MonthlyAmount { get; set; } = default!;
+        [JsonPropertyName("promptTokens")]
+        public int PromptTokens { get; set; }
 
-        [JsonPropertyName("createdTime")]
-        public string CreatedTime { get; set; } = DateTime.Now.ToString();
+        [JsonPropertyName("operation")]
+        public string Operation { get; set; } = default!;
+
+        [JsonPropertyName("amount")]
+        public double Amount { get; set; }
+
+        [JsonPropertyName("transCost")]
+        public string TransCost { get; set; } = default!;
+
+        [JsonPropertyName("balance")]
+        public string Balance { get; set; } = default!;
 
     }
 }

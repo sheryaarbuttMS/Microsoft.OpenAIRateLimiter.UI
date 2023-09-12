@@ -2,7 +2,7 @@
 @model IList<Microsoft.OpenAIRateLimiter.UI.Models.ProdQuota>
 
 @{
-    ViewData["Title"] = "Home Page";    
+    ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
@@ -10,146 +10,171 @@
     <p>Manage spending limits</p>
 </div>
 
-    <script type="text/javascript">
-           
-        $(document).ajaxStart(function () {
-            $('#overlay').fadeIn();
+<script type="text/javascript">
+
+    $(document).ajaxStart(function () {
+        $('#overlay').fadeIn();
+    });
+
+    $(document).ajaxStop(function () {
+        $('#overlay').fadeOut();
+    });
+
+    $(document).on("click", ".btnView", function (e) {
+        e.preventDefault();
+
+        $('#historyModal').modal('show');
+
+        var subscription = encodeURIComponent(e.target.name);
+
+        var searchUrl = $("#hiddenHistoryAPIURL").val() + "?subscription=" + subscription;
+
+        $.get(searchUrl, function (data) {
+
+            var recordCount = 0;
+
+            if (data != null)
+                $('#tblHistory').bootstrapTable("load", data);
+
+        }).fail(function (jqXHR, textStatus, errorThrown) {
+            $('#errorAlert').text('jqXHR = ' + jqXHR.responseText + '; textStatus = ' + textStatus + '; errorThrown = ' + errorThrown);
+            $('#errorAlert').show();
         });
 
-        $(document).ajaxStop(function () {
-            $('#overlay').fadeOut();
-        });
+    });
 
-        $(document).on("click", ".btnRow", function(e){
-            e.preventDefault();
-        
-            $('#myModal').modal('show'); 
+    $(document).on("click", ".btnRow", function (e) {
+        e.preventDefault();
 
-            $('#myModalLabel').text('Edit Quota');
+        $('#myModal').modal('show');
 
-            var subscription = encodeURIComponent(e.target.name);
+        $('#myModalLabel').text('Edit Quota');
 
-            var passURL = $("#hiddenEditQuotaAPIURL").val() + "?subscription=" + subscription;
+        var subscription = encodeURIComponent(e.target.name);
 
-            $.get(passURL, function (data) {                
-            
-                $('#errorAlert').hide();
-                        
-                $('#txtSub').val(data.subscriptionKey);
-                    
-                $('#txtproduct').val(data.productName);
-                    
-                $('#txtAmount').val(data.amount);
+        var passURL = $("#hiddenEditQuotaAPIURL").val() + "?subscription=" + subscription;
 
-            });
-        });
-
-        $(document).ready(function () {
+        $.get(passURL, function (data) {
 
             $('#errorAlert').hide();
 
-                 var searchUrl = $("#hiddenSearchAPIURL").val();
+            $('#txtSub').val(data.subscriptionKey);
 
-                $.get(searchUrl, function (data) {
+            $('#txtproduct').val(data.productName);
 
-                    var recordCount = 0;
+            $('#txtAmount').val(data.amount);
 
-                    if(data != null)
-                        $('#tblManifests').bootstrapTable("load", data);
-                            
-                }).fail(function (jqXHR, textStatus, errorThrown) {
-                    $('#errorAlert').text('jqXHR = ' + jqXHR.responseText + '; textStatus = ' + textStatus + '; errorThrown = ' + errorThrown);
-                    $('#errorAlert').show();
-                });
+        });
+    });
 
+    $(document).ready(function () {
 
+        $('#errorAlert').hide();
 
-            $("#btnSave").click(function (e) {
-                e.preventDefault();
+        var searchUrl = $("#hiddenSearchAPIURL").val();
 
-                var subscription = encodeURIComponent($('#txtSub').val());
+        $.get(searchUrl, function (data) {
 
-                var product = encodeURIComponent($('#txtproduct').val());
-            
-                var monthlyAmount = encodeURIComponent($('#txtAmount').val());
+            var recordCount = 0;
 
-                var passURL = $("#hiddenAddQuotaAPIURL").val() + "?sub=" + subscription + "&prod=" + product + "&amt=" + monthlyAmount;
+            if (data != null)
+                $('#tblManifests').bootstrapTable("load", data);
 
-                $.get(passURL, function (data) {                
-                
-                    $('#errorAlert').hide();
-
-                    if(data==true)
-                    {
-                        $('#btnClose').trigger('click');
-                    }else
-                    {                    
-                        $('#errorAlert').text('Add was not successful');
-                        $('#errorAlert').show();
-                    }
-
-                    $('#myModal').modal('hide'); 
-                
-                }).fail(function (jqXHR, textStatus, errorThrown) {
-                    $('#errorAlert').text('jqXHR = ' + jqXHR.responseText + '; textStatus = ' + textStatus + '; errorThrown = ' + errorThrown);
-                    $('#errorAlert').show();
-                });
-
-            });
-        
-            $("#btnClose").click(function (e) {
-                e.preventDefault();
-
-                $('#myModal').modal('hide'); 
-            
-                $('#txtSub').val('');
-                    
-                $('#txtproduct').val('');
-                    
-                $('#txtAmount').val('');
-                
-                 var searchUrl = $("#hiddenSearchAPIURL").val();
-
-                $.get(searchUrl, function (data) {
-
-                    var recordCount = 0;
-
-                    if(data != null)
-                        $('#tblManifests').bootstrapTable("load", data);
-                            
-                }).fail(function (jqXHR, textStatus, errorThrown) {
-                    $('#errorAlert').text('jqXHR = ' + jqXHR.responseText + '; textStatus = ' + textStatus + '; errorThrown = ' + errorThrown);
-                    $('#errorAlert').show();
-                });
-
-            });
-
-            $("#btnAdd").click(function (e) {
-                e.preventDefault();
-
-                $('#myModal').modal('show'); 
-
-                $('#myModalLabel').text('Add New Quota');
-            
-                $('#txtSub').val('');
-                    
-                $('#txtproduct').val('');
-                    
-                $('#txtAmount').val('');
-
-            });
+        }).fail(function (jqXHR, textStatus, errorThrown) {
+            $('#errorAlert').text('jqXHR = ' + jqXHR.responseText + '; textStatus = ' + textStatus + '; errorThrown = ' + errorThrown);
+            $('#errorAlert').show();
         });
 
-        $(document).bind('keydown', function (e) {
-            if (e.which === 13) {
-                $('#btnAdd').trigger('click');
-            }
+        $("#btnSave").click(function (e) {
+            e.preventDefault();
+
+            var subscription = encodeURIComponent($('#txtSub').val());
+
+            var product = encodeURIComponent($('#txtproduct').val());
+
+            var monthlyAmount = encodeURIComponent($('#txtAmount').val());
+
+            var passURL = $("#hiddenAddQuotaAPIURL").val() + "?sub=" + subscription + "&prod=" + product + "&amt=" + monthlyAmount;
+
+            $.get(passURL, function (data) {
+
+                $('#errorAlert').hide();
+
+                if (data == true) {
+                    $('#btnClose').trigger('click');
+                } else {
+                    $('#errorAlert').text('Add was not successful');
+                    $('#errorAlert').show();
+                }
+
+                $('#myModal').modal('hide');
+
+            }).fail(function (jqXHR, textStatus, errorThrown) {
+                $('#errorAlert').text('jqXHR = ' + jqXHR.responseText + '; textStatus = ' + textStatus + '; errorThrown = ' + errorThrown);
+                $('#errorAlert').show();
+            });
+
         });
 
-    </script>
+        $("#btnCloseHistoryModal").click(function (e) {
+            e.preventDefault();
+
+            $('#historyModal').modal('hide');
+
+        });
+
+        $("#btnClose").click(function (e) {
+            e.preventDefault();
+
+            $('#myModal').modal('hide');
+
+            $('#txtSub').val('');
+
+            $('#txtproduct').val('');
+
+            $('#txtAmount').val('');
+
+            var searchUrl = $("#hiddenSearchAPIURL").val();
+
+            $.get(searchUrl, function (data) {
+
+                var recordCount = 0;
+
+                if (data != null)
+                    $('#tblManifests').bootstrapTable("load", data);
+
+            }).fail(function (jqXHR, textStatus, errorThrown) {
+                $('#errorAlert').text('jqXHR = ' + jqXHR.responseText + '; textStatus = ' + textStatus + '; errorThrown = ' + errorThrown);
+                $('#errorAlert').show();
+            });
+
+        });
+
+        $("#btnAdd").click(function (e) {
+            e.preventDefault();
+
+            $('#myModal').modal('show');
+
+            $('#myModalLabel').text('Add New Quota');
+
+            $('#txtSub').val('');
+
+            $('#txtproduct').val('');
+
+            $('#txtAmount').val('');
+
+        });
+    });
+
+    $(document).bind('keydown', function (e) {
+        if (e.which === 13) {
+            $('#btnAdd').trigger('click');
+        }
+    });
+
+</script>
 
 <div class="alert alert-danger" role="alert" id="errorAlert">
-
 </div>
 
 <div id="overlay" style="display:none; left: 50%; margin-left: -4em;" class="col-12">
@@ -165,79 +190,117 @@
         <div class="col-11">
             <label> </label>
         </div>
-        <div class="col-1" >
+        <div class="col-1">
             <input type="button" id="btnAdd" class="btn btn-primary" name="name" value="Add New" data-toggle="modal" data-target="#myModal" />
         </div>
-    </div>    
+    </div>
     <div class="row">
         <div class="col-12">
             <table id="tblManifests" class="table table-striped rounded rounded-lg text-nowrap " data-toggle="table" data-loading-text="Loading Please wait..." width="100%">
                 <thead class="table-primary">
                     <tr>
-                        <th data-field="rownum" data-formatter="RowNumberGenerator"></th> 
+                        <th data-field="rownum" data-formatter="RowNumberGenerator"></th>
                         <th data-field="productName" data-sortable="true" data-formatter="TextGenerator">Product</th>
                         <th data-field="subscriptionKey" data-sortable="true" data-formatter="TextGenerator">APIM Key</th>
-                        <th data-field="amount" data-formatter="TextGenerator">Balance</th>
-                        <th data-field="monthlyAmount" data-formatter="TextGenerator">Monthly Spend</th>
+                        <th data-field="balance" data-formatter="TextGenerator">Balance</th>
+                        <th data-field="amount" data-formatter="TextGenerator">Monthly Spend</th>
                         <th data-field="tokenAmount" data-sortable="true" data-formatter="TextGenerator">Total Tokens</th>
-                        <th data-field="subscriptionKey" data-formatter="LinkGenerator">History</th>
-                        <th data-field="createdTime" data-formatter="DateFormatter" data-sortable="true" >Created Time</th>
+                        <th data-field="subscriptionKey" data-formatter="ViewButtonGenerator">History</th>
+                        <th data-field="timestamp" data-formatter="DateFormatter" data-sortable="true">Created Time</th>
                         <th data-field="subscriptionKey" data-formatter="ButtonGenerator"></th>
                     </tr>
                 </thead>
             </table>
         </div>
     </div>
-    
+
     <!-- Modal -->
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header text-center">
-            
-            <h4 class="modal-title " id="myModalLabel">Modal title</h4>
-          </div>
-          <div class="modal-body">
-             <div class="row">
-                 <div class="col-1"> 
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header text-center">
+
+                    <h4 class="modal-title " id="myModalLabel">Modal title</h4>
                 </div>
-                <div class="col-5">
-                    <label class="col-form-label" title="Subscription" for="txtSub">Subscription</label>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-1">
+                        </div>
+                        <div class="col-5">
+                            <label class="col-form-label" title="Subscription" for="txtSub">Subscription</label>
+                        </div>
+                        <div class="col-6">
+                            <input type="text" title="Subscription" name="Sub" id="txtSub" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-1">
+                        </div>
+                        <div class="col-5">
+                            <label class="col-form-label" title="Product" for="txtproduct">Product Name</label>
+                        </div>
+                        <div class="col-6">
+                            <input type="text" title="product" name="Product" id="txtproduct" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-1">
+                        </div>
+                        <div class="col-5">
+                            <label class="col-form-label" title="Amount" for="txtAmount">Monthly Amount</label>
+                        </div>
+                        <div class="col-6">
+                            <input type="text" title="Amount" name="Amount" id="txtAmount" class="form-control" />
+                        </div>
+                    </div>
                 </div>
-                <div class="col-6"> 
-                    <input type="text" title="Subscription" name="Sub" id="txtSub" class="form-control" />
+                <div class="modal-footer">
+                    <button id="btnClose" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="btnSave" type="button" class="btn btn-primary">Save changes</button>
                 </div>
-            </div> 
-            <div class="row">
-                 <div class="col-1"> 
-                </div>
-                <div class="col-5">
-                    <label class="col-form-label" title="Product" for="txtproduct">Product Name</label>
-                </div>
-                <div class="col-6"> 
-                    <input type="text" title="product" name="Product" id="txtproduct" class="form-control" />
-                </div>
-            </div> 
-            <div class="row">
-                 <div class="col-1"> 
-                </div>
-                <div class="col-5"> 
-                    <label class="col-form-label" title="Amount" for="txtAmount">Monthly Amount</label>
-                </div>
-                <div class="col-6"> 
-                    <input type="text" title="Amount" name="Amount" id="txtAmount" class="form-control" />
-                </div>
-            </div> 
-          </div>
-          <div class="modal-footer">
-            <button id="btnClose" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            <button id="btnSave" type="button" class="btn btn-primary">Save changes</button>
-          </div>
+            </div>
         </div>
-      </div>
     </div>
 
+    <div class="modal fade " id="historyModal" tabindex="-1" role="dialog" aria-labelledby="historyModalLabel">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header text-center">
+
+                    <h4 class="modal-title " id="historyModalLabel">History</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
+
+                            <table id="tblHistory" class="table table-striped rounded rounded-lg text-nowrap " data-toggle="table" data-loading-text="Loading Please wait..." width="100%">
+                                <thead class="table-primary">
+                                    <tr>
+                                        <th data-field="rownum" data-formatter="TextGenerator"></th>
+                                        <th data-field="operation" data-sortable="true" data-formatter="TextGenerator">operation</th>
+                                        <th data-field="model" data-sortable="true" data-formatter="TextGenerator">Model</th>
+                                        <th data-field="promptTokens" data-sortable="true" data-formatter="TextGenerator">promptTokens</th>
+                                        <th data-field="tokenAmount" data-sortable="true" data-formatter="TextGenerator">Total Tokens</th>
+                                        <th data-field="transCost" data-formatter="TextGenerator">Cost</th>
+                                        <th data-field="amount" data-formatter="TextGenerator">Monthly Spend</th>
+                                        <th data-field="balance" data-formatter="TextGenerator">Balance</th>
+                                        <th data-field="timestamp" data-formatter="DateFormatter" data-sortable="true">Created Time</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="btnCloseHistoryModal" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <input type="text" id="hiddenHistoryAPIURL" value='@Url.Action("GetHistory")' style="display:none" />
     <input type="text" id="hiddenSearchAPIURL" value='@Url.Action("Search")' style="display:none" />
-    <input type="text" id="hiddenEditQuotaAPIURL" value='@Url.Action("EditQuota")'  style="display:none"/>
+    <input type="text" id="hiddenEditQuotaAPIURL" value='@Url.Action("EditQuota")' style="display:none" />
     <input type="text" id="hiddenAddQuotaAPIURL" value='@Url.Action("AddQuota")' style="display:none" />
 </div>

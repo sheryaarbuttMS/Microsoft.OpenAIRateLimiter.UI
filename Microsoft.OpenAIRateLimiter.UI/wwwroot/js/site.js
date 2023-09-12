@@ -8,6 +8,10 @@ function LinkGenerator(value, row, index) {
     return value != "" ? "<a href='" + value + "' target='_blank'> Link </a>" : "";
 }
 
+function ViewButtonGenerator(value, row, index) {
+    return value == "" ? "" : '<input type="button" id="btnView' + index + '" class="btn btn-link btnView" name="' + value + '" value="View" />';
+}
+
 function TextGenerator(value, row, index) {
 
     return value !== null ? value : "";
