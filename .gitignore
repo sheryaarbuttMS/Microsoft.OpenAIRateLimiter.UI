@@ -369,3 +369,6 @@ MigrationBackup/
 FodyWeavers.xsd
 /Microsoft.OpenAIRateLimiter.UI.sln
 /Microsoft.OpenAIRateLimiter.UI/appsettings.Development.json
+/Microsoft.OpenAIRateLimiter.UI/Properties/launchSettings.json
+/App.zip
+/App.zip

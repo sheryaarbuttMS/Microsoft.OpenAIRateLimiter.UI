@@ -12,11 +12,15 @@ namespace Microsoft.OpenAIRateLimiter.UI.Controllers
 
         private readonly HttpClient _client;
 
-        public HomeController(ILogger<HomeController> logger, IHttpClientFactory httpClientFactory)
+        private readonly APIMService _svc;
+
+        public HomeController(ILogger<HomeController> logger, IHttpClientFactory httpClientFactory, APIMService service)
         {
             _logger = logger;
             
             _client = httpClientFactory.CreateClient("QuotaService");
+
+            _svc = service;
         }
 
         public IActionResult Index()
@@ -82,12 +86,14 @@ namespace Microsoft.OpenAIRateLimiter.UI.Controllers
 
         }
         
-        public async Task<bool> AddQuota(string sub, string prod, string amt)
+        public async Task<bool> AddQuota(string sub, string prod, string amt, string apiurl = "", string apikey = "")
         {
             try
             {
 
-                var payload = new { subscriptionKey = sub, productName = prod, amount = amt };
+                var subKey = string.IsNullOrEmpty(sub) ? await _svc.CreateProduct(prod, apiurl, apikey) : sub;
+
+                var payload = new { subscriptionKey = subKey, productName = prod, amount = amt };
 
                 HttpContent c = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
 

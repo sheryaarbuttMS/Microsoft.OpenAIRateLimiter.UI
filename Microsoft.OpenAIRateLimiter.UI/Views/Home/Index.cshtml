@@ -48,6 +48,9 @@
 
         $('#myModal').modal('show');
 
+        $('#divAddAPI').hide();
+        $('#divapiswitch').hide();
+
         $('#myModalLabel').text('Edit Quota');
 
         var subscription = encodeURIComponent(e.target.name);
@@ -67,6 +70,8 @@
             $('#txtproduct').val(data.productName);
 
             $('#txtAmount').val(data.amount);
+
+            $('#divAddOnly').hide();
 
         });
     });
@@ -100,6 +105,9 @@
 
             var passURL = $("#hiddenAddQuotaAPIURL").val() + "?sub=" + subscription + "&prod=" + product + "&amt=" + monthlyAmount;
 
+            if ($("#chkAPI").is(':checked')) 
+                passURL += "&apiurl=" + encodeURIComponent($('#txtapiendpoint').val()) + "&apikey=" + encodeURIComponent($('#txtapikey').val());
+            
             $.get(passURL, function (data) {
 
                 $('#errorAlert').hide();
@@ -118,6 +126,24 @@
                 $('#errorAlert').show();
             });
 
+        });
+
+        $("#chkSub").change(function () {
+            if (this.checked) {
+                $('#txtSub').removeAttr('disabled');
+            }
+            else {
+                $('#txtSub').attr('disabled', 'disabled');
+            }
+        });
+
+        $("#chkAPI").change(function () {
+            if (this.checked) {
+                $('#divAddAPI').show();
+            }
+            else {
+                $('#divAddAPI').hide();
+            }
         });
 
         $("#btnCloseHistoryModal").click(function (e) {
@@ -140,6 +166,13 @@
 
             $('#txtAmount').val('');
 
+            $('#txtapiendpoint').val('');
+            $('#txtapikey').val('');
+            
+            $('#divAddAPI').hide();
+            $('#divapiswitch').hide();
+            $("#chkAPI").prop('checked', false);
+
             var searchUrl = $("#hiddenSearchAPIURL").val();
 
             $.get(searchUrl, function (data) {
@@ -161,16 +194,25 @@
 
             $('#myModal').modal('show');
 
+            $('#divAddOnly').show();
+            $('#divAddAPI').hide(); 
+            $('#divapiswitch').show();
+            $("#chkAPI").prop('checked', false);
+
             $('#myModalLabel').text('Add New Quota');
             
             $('#lblAmount').text('Monthly Amount');
 
+            $('#txtSub').attr('disabled', 'disabled');
             $('#txtSub').val('');
 
             $('#txtproduct').val('');
 
             $('#txtAmount').val('');
 
+            $('#txtapiendpoint').val('');
+
+            $('#txtapikey').val('');
         });
     });
 
@@ -189,14 +231,6 @@
 <div class="alert alert-danger" role="alert" id="errorAlert">
 </div>
 
-<div id="overlay" style="display:none; left: 50%; margin-left: -4em;" class="col-12">
-    <div class="spinner-border" style="width: 3rem; height: 3rem; " role="status">
-        <span class="sr-only">Loading...</span>
-    </div>
-    <br />
-    Loading...
-</div>
-
 <div id="divTable" class="card shadow-lg p-3 mb-5 rounded rounded-lg">
     <div class="row">
         <div class="col-11">
@@ -211,9 +245,9 @@
             <table id="tblManifests" class="table table-striped rounded rounded-lg text-nowrap " data-toggle="table" data-loading-text="Loading Please wait..." width="100%">
                 <thead class="table-primary">
                     <tr>
-                        <th data-field="rownum" data-formatter="RowNumberGenerator"></th>
+                        <th data-field="rownum" data-formatter="RowNumberGenerator" toole ></th>
                         <th data-field="productName" data-sortable="true" data-formatter="TextGenerator">Product</th>
-                        <th data-field="subscriptionKey" data-sortable="true" data-formatter="TextGenerator">APIM Key</th>
+                        @* <th data-field="subscriptionKey" data-sortable="true" data-formatter="TextGenerator">APIM Key</th> *@
                         <th data-field="balance" data-sortable="true" data-formatter="TextGenerator">Balance</th>
                         <th data-field="amount" data-sortable="true" data-formatter="TextGenerator">Monthly Spend</th>
                         <th data-field="tokenAmount" data-sortable="true" data-formatter="TextGenerator">Total Tokens</th>
@@ -226,6 +260,18 @@
         </div>
     </div>
 
+    <div class="row">
+        <div class="col-12">
+            <div id="overlay" style="display:none; left: 50%; margin-left: -4em;" class="col-12">
+                <div class="spinner-border" style="width: 3rem; height: 3rem; " role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <br />
+                Loading...
+            </div>
+        </div>
+    </div>
+
     <!-- Modal -->
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
@@ -235,6 +281,17 @@
                     <h4 class="modal-title " id="myModalLabel">Modal title</h4>
                 </div>
                 <div class="modal-body">
+
+                    <div class="row" id="divAddOnly">
+                        <div class="col-4">
+                        </div>
+                        <div class="col-8">
+                            <div class="form-check form-switch">
+                                <label class="form-check-label" for="chkSub">Use Existing Subscription</label>
+                                <input class="form-check-input" type="checkbox" role="switch" id="chkSub">
+                            </div>
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col-4">
                             <label class="col-form-label" title="Subscription" for="txtSub">Subscription</label>
@@ -259,6 +316,38 @@
                             <input type="text" title="Amount" name="Amount" id="txtAmount" class="form-control" />
                         </div>
                     </div>
+
+                    <div class="row" id="divapiswitch">
+                        <div class="col-4">
+                        </div>
+                        <div class="col-8">
+                            <div class="form-check form-switch">
+                                <label class="form-check-label" for="chkSub">Specify Open AI </label>
+                                <input class="form-check-input" type="checkbox"  id="chkAPI">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="divAddAPI">
+                            <div class="row">
+                                <div class="col-4">
+                                <label class="col-form-label" title="API Endpoint" for="txtapiendpoint">API Endpoint</label>
+                                </div>
+                                <div class="col-8">
+                                    <input type="text" title="API Endpoint" name="apiendpoint" id="txtapiendpoint" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-4">
+                                <label class="col-form-label" title="API Key" for="txtapikey">API Key</label>
+                                </div>
+                                <div class="col-8">
+                                <input type="text" title="API Key" name="APIKey" id="txtapikey" class="form-control" />
+                                </div>
+                            </div>
+                    
+                    </div>
+
                 </div>
                 <div class="modal-footer">
                     <button id="btnClose" type="button" class="btn btn-default" data-dismiss="modal">Close</button>

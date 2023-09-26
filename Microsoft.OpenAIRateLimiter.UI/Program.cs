@@ -1,3 +1,7 @@
+using Azure.Identity;
+using Azure.ResourceManager;
+using Microsoft.OpenAIRateLimiter.UI;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -9,6 +13,13 @@ builder.Services.AddHttpClient("QuotaService", httpClient =>
     httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", builder.Configuration["QuotaAPIKey"]);
 
 });
+
+builder.Services.AddScoped(Provider =>
+{
+    return new ArmClient(new DefaultAzureCredential(true));
+});
+
+builder.Services.AddScoped<APIMService>();
 
 var app = builder.Build();
 
