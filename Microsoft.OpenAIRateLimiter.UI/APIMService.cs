@@ -28,7 +28,7 @@ namespace Microsoft.OpenAIRateLimiter.UI
 
             var prodResource = await CreateProduct(subscriptionId, resourceGroup, apimName, prodName);
 
-            string apiId = "OpenAI";
+            string apiId = "azure-openai-service-api";
 
             var res = await AddProductToAPI(prodResource, apiId);
 
